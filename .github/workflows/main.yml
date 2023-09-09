@@ -13,6 +13,6 @@ jobs:
     - name: FTP-Deploy-Action
       uses: SamKirkland/FTP-Deploy-Action@v4.3.4
       with:
-        server: ${{ secrets.19oi.ru }}        
-        username: ${{ secrets.u19978_a07 }}
-        password: ${{ secrets.7R7h3E6u9Y }} 
+        server: ${{ secrets.ftp_server }}        
+        username: ${{ secrets.ftp_username }}
+        password: ${{ secrets.ftp_password }} 
