@@ -40,24 +40,33 @@ if (strlen($pass) >= 8) {
     
 
 
-    $stmt = $conn->prepare("SELECT * FROM `user` WHERE login = :login1");
-    $stmt->bindParam(':login1', $login2);
-    $stmt->execute();
-    $user = $stmt->fetch();
-    // Проверка, найден ли пользователь
-    if ($user) {
-    // Сравнение хешированного пароля из базы данных с введенным паролем
-    if (password_verify($pass, $user['password'])) {
-    // Если пароль совпадает, выполняем нужные действия
-    echo "Авторизация прошла успешно!";
-    } else {
-    // Если пароль не совпадает, выводим сообщение об ошибке
-    echo "Неверный пароль!";
-    }
-    } else {
-    // Если пользователь не найден, выводим сообщение об ошибке
-    echo "Пользователь не найден!";
-    }
+// Поиск пользователя по логину
+$stmt1 = $conn->prepare("SELECT * FROM `user` WHERE login = :login");
+$stmt1->bindParam(':login', $login2);
+$stmt1->execute();
+$userByLogin = $stmt1->fetch();
+
+// Поиск пользователя по почте
+$stmt2 = $conn->prepare("SELECT * FROM `user` WHERE email = :email");
+$stmt2->bindParam(':email', $email);
+$stmt2->execute();
+$userByEmail = $stmt2->fetch();
+
+if ($userByLogin) {
+if (password_verify($pass, $userByLogin['password'])) {
+echo "Авторизация по логину прошла успешно!";
+} else {
+echo "Неверный пароль!";
+}
+} elseif ($userByEmail) {
+if (password_verify($pass, $userByEmail['password'])) {
+echo "Авторизация по почте прошла успешно!";
+} else {
+echo "Неверный пароль!";
+}
+} else {
+echo "Пользователь не найден!";
+}
 
 
 

@@ -60,7 +60,19 @@ if (strlen($pass) >= 8) {
     } else {
     echo "Логин является уникальным!<br>";
     }
-
+    $sql2 = "SELECT COUNT(*) FROM `user` WHERE `email` = ?";
+    $statement = $conn->prepare($sql2);
+    $statement->execute([$email]);
+    $count = $statement->fetchColumn();
+    
+    if ($count > 0) {
+    echo "Пользователь с таким email уже существует!
+    ";
+    exit;
+    } else {
+    echo "Email является уникальным!
+    ";
+    }
     try {
         $stmt = $conn->prepare("INSERT INTO `user` (login, email, password) VALUES (:login, :email, :password)");
         $stmt->bindParam(':login', $login2);
