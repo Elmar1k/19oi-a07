@@ -61,16 +61,15 @@ if (strlen($pass) >= 8) {
     echo "Логин является уникальным!<br>";
     }
 
-        try {
-        $sql = "INSERT INTO `user` (login, email, password)
-        VALUES ('$login2', '$email', '$hashedPassword')";
-        // use exec() because no results are returned
-        $conn->exec($sql);
-        echo "New record created successfully";
-        }
-        catch(PDOException $e)
-        {
-        echo $sql . "<br>" . $e->getMessage();
+    try {
+        $stmt = $conn->prepare("INSERT INTO `user` (login, email, password) VALUES (:login, :email, :password)");
+        $stmt->bindParam(':login', $login2);
+        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':password', $hashedPassword);
+        $stmt->execute();
+        echo "Данные добавлены";
+        } catch(PDOException $e) {
+        echo "Ошибка: " . $e->getMessage();
         }
     
        $conn = null;

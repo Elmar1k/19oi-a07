@@ -41,16 +41,15 @@ if (strlen($pass) >= 8) {
 
 
     $stmt = $conn->prepare("SELECT * FROM `user` WHERE login = :login1");
-    $stmt->bindParam(':login1', $_POST['login']);
+    $stmt->bindParam(':login1', $login2);
     $stmt->execute();
     $user = $stmt->fetch();
-    var_dump($user, $_POST, password_hash($_POST['psw'], PASSWORD_DEFAULT));
     // Проверка, найден ли пользователь
     if ($user) {
     // Сравнение хешированного пароля из базы данных с введенным паролем
-    if (password_verify($_POST['psw'], $user[`password`])) {
+    if (password_verify($pass, $user['password'])) {
     // Если пароль совпадает, выполняем нужные действия
-    echo "Пароль верный!";
+    echo "Авторизация прошла успешно!";
     } else {
     // Если пароль не совпадает, выводим сообщение об ошибке
     echo "Неверный пароль!";
