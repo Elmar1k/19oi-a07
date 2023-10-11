@@ -13,7 +13,6 @@ exit('Не POST');
 // Проверка, что все поля формы заполнены
 if (!empty($_POST['login']) && !empty($_POST['psw'])) {
     // Все поля формы заполнены
-    echo "Все поля формы заполнены!<br>";
     } else {
     // Не все поля формы заполнены
     echo "Пожалуйста, заполните все поля формы!<br>";
@@ -27,7 +26,6 @@ $pass = filter_var(trim($_POST['psw']), FILTER_SANITIZE_STRING);
 $login2 = $_POST['login'];
 
 if (strlen($pass) >= 8) {
-    echo "Пароль допустимой длины!<br>";
     } else {
     echo "Пароль должен содержать не менее 8 символов!<br>";
     include "../index.html"; // Если пароли не совпадают, то возвращаем на страницу ввода. Тут своё название и путь к файлу укажите.
@@ -40,25 +38,27 @@ if (strlen($pass) >= 8) {
     $password   = "7R7h3E6u9Y";               // Пароль
     $conn = new PDO('mysql:host='.$host.';dbname='.$dbname.';charset=utf8', $user, $password);
     
-// Подготовленный SQL-запрос для получения пользователя по логину
-$sql = "SELECT * FROM `user` WHERE login = ?";
-$statement = $conn->prepare($sql);
-$statement->execute([$login2]);
-$user = $statement->fetch(PDO::FETCH_ASSOC);
 
-// Проверка существования пользователя
-if ($login2) {
-$storedPassword = $login2['password'];
 
-// Сравнение хеша пароля из базы данных с введенным паролем
-if (password_verify($pass, $storedPassword)) {
-echo "Пароль совпадает! Успешная авторизация.";
-} else {
-echo "Пароль не совпадает! Неверный пароль.";
-}
-} else {
-echo "Пользователь с таким логином не существует.";
-}
+    $stmt = $conn->prepare("SELECT * FROM `user` WHERE login = :login1");
+    $stmt->bindParam(':login1', $_POST['login']);
+    $stmt->execute();
+    $user = $stmt->fetch();
+    var_dump($user, $_POST, password_hash($_POST['psw'], PASSWORD_DEFAULT));
+    // Проверка, найден ли пользователь
+    if ($user) {
+    // Сравнение хешированного пароля из базы данных с введенным паролем
+    if (password_verify($_POST['psw'], $user[`password`])) {
+    // Если пароль совпадает, выполняем нужные действия
+    echo "Пароль верный!";
+    } else {
+    // Если пароль не совпадает, выводим сообщение об ошибке
+    echo "Неверный пароль!";
+    }
+    } else {
+    // Если пользователь не найден, выводим сообщение об ошибке
+    echo "Пользователь не найден!";
+    }
 
 
 
